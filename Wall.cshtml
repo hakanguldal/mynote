@@ -1,0 +1,49 @@
+﻿@{
+     if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}     
+Layout="~/shared/_Layout.cshtml";  
+
+var db=Database.Open("mynote");
+
+
+
+var queryNotes=db.Query("SELECT * FROM Note INNER JOIN Wall ON Note.NoteID=Wall.NoteID");
+
+
+}
+
+
+<h1>Ortak Duvar</h1>
+<div class="container">
+ <div id='frame'>
+
+     @foreach(var not in queryNotes)
+     {
+         var renkClass="";
+         if (not.Color=="kirmizi")
+         {
+            renkClass="sticky3";
+            }
+            
+         else if (not.Color=="yesil")
+         {
+         renkClass="sticky2";
+         }
+         else
+         { 
+         renkClass="sticky1";
+         }
+        
+         
+            <a class="note @renkClass" href="#">
+               
+                <div class='text'><strong>@db.QueryValue("SELECT Name + ' ' + Surname FROM Profiles WHERE UserID=@0",not.UserID),  @not.Caption</strong> <hr> @not.Text <hr></div>
+               
+            </a>
+        }
+     
+     </div>
+</div>
+

@@ -1,0 +1,22 @@
+﻿@{
+    if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}    
+
+var db=Database.Open("mynote");
+
+var noteID=Request.QueryString["NoteID"];
+
+if (db.QuerySingle("SELECT * FROM Note WHERE NoteID=@0 AND UserID=@1",noteID,WebSecurity.CurrentUserId)!=null)
+{
+    if (db.QuerySingle("SELECT * FROM Wall WHERE NoteID=@0",noteID)==null)
+        {
+         db.Execute("INSERT INTO Wall(NoteID) VALUES (@0)",noteID);
+        }
+}
+db.Close();
+Response.Redirect("~/Wall");
+}
+
+

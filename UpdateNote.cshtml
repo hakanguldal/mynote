@@ -1,0 +1,40 @@
+﻿@{
+   if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}     
+Layout="~/shared/_Layout.cshtml";  
+ var db=Database.Open("mynote");
+var noteID=Request.QueryString["NoteID"];
+
+if (IsPost)
+{
+    db.Execute("UPDATE Note SET Caption=@0, Text=@1 WHERE NoteID=@2 AND UserID=@3",Request["txtBaslik"],Request["txtMetin"],noteID,WebSecurity.CurrentUserId);
+
+   Response.Redirect("~/NoteDetail?NoteID=" + noteID);
+}
+
+var queryNote=db.QuerySingle("SELECT * FROM Note WHERE NoteID=@0 AND UserID=@1",noteID,WebSecurity.CurrentUserId);
+
+
+
+
+}
+
+
+<h1>Not Bilgilerini Güncelle</h1>
+    <form method="post" action="#">
+        <label>Başlık</label>
+        <input type="text" class="form-control" name="txtBaslik" value="@queryNote.Caption" placeholder="Başlığı Giriniz..." required>
+
+      <label>Metin</label>
+      <textarea class="form-control" name="txtMetin" placeholder="Metni Giriniz..." required>@queryNote.Text</textarea>
+       
+        <br>
+        <button class="btn btn-success" type="submit">Güncelle</button>
+    
+    </form>
+
+@{
+    db.Close();
+}

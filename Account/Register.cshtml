@@ -1,0 +1,80 @@
+﻿@{
+Layout="~/shared/_LayoutPublic.cshtml";    
+var db=Database.Open("mynote");
+bool epostaKayitli=false;
+bool sifrelerUyusmadi=false;
+bool hataVar=false;
+
+if (IsPost)
+{
+    
+    var name=Request["txtName"];
+    var surname=Request["txtSurname"];
+    var email=Request["txtEmail"];
+    var password=Request["txtPassword"];
+    var password2=Request["txtPassword2"];
+
+    if (db.QuerySingle("SELECT * FROM Profiles WHERE Email=@0",email)!=null)
+    {
+        epostaKayitli=true;
+        hataVar=true;    
+    }
+
+    if (password!=password2)
+    {
+        sifrelerUyusmadi=true;
+        hataVar=true;
+    }
+
+    if (hataVar==false)
+    {
+        db.Execute("INSERT INTO Profiles(Email,Name,Surname) VALUES (@0,@1,@2)",email,name,surname);
+
+        WebSecurity.CreateAccount(email,password);        
+
+        WebSecurity.Login(email,password);
+        Response.Redirect("~/");
+    }
+
+
+}
+
+
+}
+<div>
+<h1>Kayıt Ol</h1>
+    @if (epostaKayitli==true)
+    {
+        <p class="alert alert-danger">Bu Eposta daha önce kayıt edilmiş.</p>
+    }
+
+    @if (sifrelerUyusmadi==true)
+    {
+        <p class="alert alert-danger">Girilen şifreler eşit değildi</p>
+    }
+    <form method="post" action="#">
+    <label>Ad:</label>
+    <input type="text" name="txtName" required placeholder="Adınızı Giriniz..." class="form-control">
+
+        <label>Soyad:</label>
+    <input type="text" name="txtSurname" required placeholder="Soyadınızı Giriniz..." class="form-control">
+    
+        <label>E-Mail</label>
+    <input type="text" name="txtEmail" required placeholder="Email Adresinizi Giriniz..." class="form-control">
+
+        <label>Parola:</label>
+
+        <input type="password" name="txtPassword" required placeholder="Parolanızı Giriniz..." class="form-control">
+
+        <label>Parola: (Tekrar)</label>
+
+        <input type="password" name="txtPassword2" required placeholder="Parolanızı Tekrar Giriniz..." class="form-control">
+
+        <br>
+        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Kayıt Ol</button>
+    
+    </form>
+</div>
+@{
+    db.Close();
+}

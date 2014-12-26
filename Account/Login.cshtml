@@ -1,0 +1,41 @@
+﻿@{
+Layout="~/shared/_LayoutPublic.cshtml";
+ bool girisBasarisiz=false;
+ var email="";
+ var password="";
+ if (IsPost)
+ {
+     email=Request["txtEmail"];
+     password=Request["txtPassword"];
+
+     if (WebSecurity.Login(email,password)==true)
+     {
+         Response.Redirect("~/");
+     }
+     else
+     {
+         girisBasarisiz=true;
+     }
+ }   
+}
+<div>
+<h1>Giriş Yap</h1>
+ @if (girisBasarisiz==true)
+ {
+     <p class="alert alert-danger"> Giriş Başarısız</p>
+ }  
+    <form method="post" action="#">
+   
+        <label>E-Mail</label>
+    <input type="text" name="txtEmail" value="@email" required placeholder="Email Adresinizi Giriniz..." class="form-control">
+
+        <label>Parola:</label>
+
+        <input type="password" name="txtPassword" required placeholder="Parolanızı Giriniz..." class="form-control">
+
+        <br>
+        <button type="submit" class="btn btn-success"> Giriş Yap</button> <a href="@Href("~/Account/Register")" class="btn btn-info">Kayıt Ol</a>
+    
+    </form>
+    
+</div>

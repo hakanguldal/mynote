@@ -1,0 +1,40 @@
+﻿@{
+   if (WebSecurity.IsAuthenticated==false)
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+Layout="~/shared/_Layout.cshtml";       
+
+var db=Database.Open("mynote");
+
+
+var noteID=Request.QueryString["NoteID"];
+
+var queryNote=db.QuerySingle("SELECT * FROM Note WHERE NoteID=@0 AND UserID=@1",noteID,WebSecurity.CurrentUserId);
+
+}
+
+<div>
+    <h1>Not Detayları</h1>
+    <hr>
+<h1>@queryNote.Caption</h1>
+<h2>@queryNote.Text</h2>
+<h3>@queryNote.Date</h3>
+    <br>
+    <br>
+    <a href="@Href("~/DeleteNote?NoteID=")@noteID" class="btn btn-danger" onclick="if (confirm('Notu Silmek istiyor musun?')==false) {return false;}" > Notu Sil </a>
+    <a href="@Href("~/UpdateNote?NoteID=")@noteID" class="btn btn-info"> Notu Güncelle </a>
+    
+    @if (db.QuerySingle("SELECT * FROM Wall WHERE NoteID=@0",noteID)==null)
+    {
+    <a href="@Href("~/ShareNote?NoteID=")@noteID" class="btn btn-success"> Notu Duvarda Paylaş </a>
+    }
+
+
+</div>
+
+
+@{
+    db.Close();
+}

@@ -1,0 +1,11 @@
+﻿@{
+    if (WebSecurity.IsAuthenticated==false)
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+Layout="~/shared/_Layout.cshtml";    
+}
+<div>
+
+</div>

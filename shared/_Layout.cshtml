@@ -1,0 +1,73 @@
+﻿@{
+    var db=Database.Open("mynote");
+
+    var kayit=db.QuerySingle("SELECT * FROM Profiles WHERE UserID=@0",WebSecurity.CurrentUserId);
+    var ad=kayit.Name;
+    var soyad=kayit.Surname;
+
+    var gorunenAdsoyad=ad + " " + soyad;
+} 
+<!-- Örnek BootStrap Şablonu -->
+<!DOCTYPE html>
+
+<html>
+  <head>   
+    <title>MyNote</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="@Href("~/shared/bootstrap/css/bootstrap.min.css")" rel="stylesheet">
+    <link href="@Href("~/shared/stickynote/notes.css")" rel="stylesheet">    
+  </head>
+
+  <body style="background-image: url(/shared/stickynote/2.jpg);background-repeat: repeat; ">
+
+    <!-- Gezinti Menüsü -->
+    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="@Href("~/")">MyNote</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="@Href("~/")">Anasayfa</a></li> <!-- İlk menü öğesi -->
+            <li><a href="@Href("~/AddNote")">Yeni Not</a></li> <!-- İkinci menü öğesi -->
+            <li><a href="@Href("~/Folders")">Klasörler</a></li>
+               <li><a href="@Href("~/Wall")">Duvar</a></li>
+                     
+             
+          </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+       
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">@gorunenAdsoyad <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="@Href("~/Account/ChangePassword")">Parola Değiştir</a></li>
+            
+            <li class="divider"></li>
+            <li><a href="@Href("~/Account/Logout")">Oturumu Kapat</a></li>
+          </ul>
+        </li>
+      </ul>
+          
+        </div>
+      </div>
+    </nav>
+
+
+    <div class="container">
+        @RenderBody() <!-- içerik bu Div içerisinde yer alacak -->
+    </div> 
+
+     <!-- JavaScript kütüphaneleri sayfanın sonuna eklendi bunun nedeni sayfa yüklenme hızını arttırmak -->
+    <script src="@Href("~/shared/bootstrap/js/jquery.min.js")"></script> <!-- Bootstrap javascript kontrolleri Jquery kullandığından dolayı bu kütüphane mutlaka eklenmeli ve bootstrap.min.js üstünde yer almalı -->
+    <script src="@Href("~/shared/bootstrap/js/bootstrap.min.js")"></script> <!-- Bootstrap javascript kütüphanesi -->
+    
+    
+  </body>
+</html>

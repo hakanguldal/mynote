@@ -1,0 +1,51 @@
+﻿@{
+     if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}     
+Layout="~/shared/_Layout.cshtml";  
+
+var db=Database.Open("mynote");
+
+var folderID=Request.QueryString["FolderID"];
+
+var queryNotes=db.Query("SELECT * FROM Note INNER JOIN NoteInFolder ON Note.NoteID=NoteInFolder.NoteID WHERE NoteInFolder.FolderID=@0 AND Note.UserID=@1",folderID,WebSecurity.CurrentUserId);
+
+
+}
+
+@if (queryNotes.Count()==0)
+{
+    <a href="@Href("~/AddNote")" class="btn btn-info"> Yeni Not Ekle</a>
+}
+<div class="container">
+ <div id='frame'>
+
+     @foreach(var not in queryNotes)
+     {
+         var renkClass="";
+         if (not.Color=="kirmizi")
+         {
+            renkClass="sticky3";
+            }
+            
+         else if (not.Color=="yesil")
+         {
+         renkClass="sticky2";
+         }
+         else
+         { 
+         renkClass="sticky1";
+         }
+
+            <a class="note @renkClass" href="@Href("~/NoteDetail?NoteID=")@not.NoteID">
+               
+                <div class='text'><strong>@not.Caption</strong> <hr> @not.Text <hr></div>
+               
+            </a>
+        }
+     
+     </div>
+</div>
+
+

@@ -1,0 +1,17 @@
+﻿@{
+if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}     
+
+var db=Database.Open("mynote");
+
+var noteID=Request.QueryString["NoteID"];
+
+db.Execute("DELETE FROM Note WHERE NoteID=@0 AND UserID=@1",noteID,WebSecurity.CurrentUserId);
+db.Close();
+
+Response.Redirect("~/");
+}
+
+

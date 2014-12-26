@@ -1,0 +1,52 @@
+﻿ @{
+if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}
+
+Layout="~/shared/_Layout.cshtml";
+ var db=Database.Open("mynote");
+ 
+ if (IsPost)
+ {
+     db.Execute("INSERT INTO Folder(Name,UserID) VALUES(@0,@1)",Request["txtKlasorAdi"],WebSecurity.CurrentUserId);
+
+
+ }
+
+ var klasorler=db.Query("SELECT * FROM Folder  WHERE UserID=@0",WebSecurity.CurrentUserId);
+
+    
+}
+
+<div>
+<h1>Klasörlerim</h1>
+    <hr>
+    @if (klasorler.Count()!=0)
+    {
+    <table class="table table-hover">
+    <tr><td>Klasör Adı</td><td></td></tr>
+        @foreach (var klasor in klasorler)
+        {
+            <tr><td><a href="@Href("~/FolderPage?FolderID=")@klasor.FolderID">@klasor.Name</a>  </td><td><a href="@Href("~/DeleteFolder?FolderID=")@klasor.FolderID" class="btn btn-danger btn-xs" onclick="if (confirm('Klasör silinecek emin misin?')==false) {return false;}"> Sil</a></td></tr>
+        }
+    
+    </table>
+      }
+      else
+      {
+          <h4>Henüz Klasörün Yok</h4>
+      }
+    <h3>Yeni Bir klasör Oluştur</h3>
+    <form method="post" action="#">
+    
+        <label>Klasör Adı</label>
+        <input type="text" name="txtKlasorAdi" class="form-control" required placeholder="Klasör Adı Giriniz">
+               <br>
+        <button class="btn btn-success"> Klasör Oluştur</button>
+    </form>
+</div>
+@{
+    db.Close();
+}
+

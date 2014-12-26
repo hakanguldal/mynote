@@ -1,0 +1,80 @@
+﻿@{
+   if (WebSecurity.IsAuthenticated==false)
+    {
+        Response.Redirect("~/Account/Login");
+    }
+    
+    var db=Database.Open("mynote");
+
+    var queryKlasorler=db.Query("SELECT * FROM Folder WHERE UserID=@0",WebSecurity.CurrentUserId);
+
+Layout="~/shared/_Layout.cshtml";  
+
+var baslik="";
+var metin="";
+var renk="";
+var klasorler="";
+if (IsPost)
+{
+    baslik=Request["txtBaslik"];
+    metin=Request["txtMetin"];
+    renk=Request["cmbRenk"];
+     klasorler=Request["checkKlasorler"];
+     
+     db.Execute("INSERT INTO Note(Caption,UserID,Text,Date,Color) VALUES(@0,@1,@2,@3,@4)",baslik,WebSecurity.CurrentUserId,metin,DateTime.Now,renk);
+
+
+     if (Request["checkKlasorler"]!=null)
+     {
+         
+         var sonEklenenNoteID=db.GetLastInsertId();
+
+        foreach (var klasorID in klasorler.Split(','))
+        {
+           
+            db.Execute("INSERT INTO NoteInFolder(NoteID,FolderID) VALUES (@0,@1)",sonEklenenNoteID,klasorID);
+
+        }
+
+       
+
+     }
+      Response.Redirect("~/");
+
+
+} 
+
+
+}
+
+<div>
+  
+    <h1>Yeni Not Ekle</h1>
+    <form method="post" action="#">
+        <label>Başlık</label>
+        <input type="text" class="form-control" name="txtBaslik" placeholder="Başlığı Giriniz..." required>
+
+      <label>Metin</label>
+      <textarea class="form-control" name="txtMetin" placeholder="Metni Giriniz..." required></textarea>
+       
+        <label>Renk</label>
+        <select name="cmbRenk" class="form-control">
+        <option value="kirmizi"> Kırmızı</option>
+            <option value="yesil"> Yeşil</option>
+            <option value="mavi"> Mavi</option>
+
+        </select> 
+        <br>
+        @foreach (var klasor in queryKlasorler)
+        {
+            <input type="checkbox" name="checkKlasorler"  value="@klasor.FolderID"> @klasor.Name
+        }
+        <br><br>
+
+        <button class="btn btn-success" type="submit">Ekle</button>
+    
+    </form>
+</div>
+@{
+    db.Close();
+}

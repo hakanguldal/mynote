@@ -1,0 +1,14 @@
+﻿@{
+
+if (WebSecurity.IsAuthenticated==false)
+{
+    Response.Redirect("~/Account/Login");
+}    
+
+var KlasorID=Request.QueryString["FolderID"];
+
+var db=Database.Open("mynote");
+db.Execute("DELETE FROM Folder WHERE FolderID=@0 AND UserID=@1",KlasorID,WebSecurity.CurrentUserId);
+Response.Redirect("~/Folders");
+}
+
